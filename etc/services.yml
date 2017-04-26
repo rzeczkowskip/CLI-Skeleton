@@ -1,0 +1,23 @@
+services:
+    app:
+        class: \Symfony\Component\Console\Application
+        arguments:
+            - '%app_name%'
+            - '%version%'
+
+    fs:
+        class: \Symfony\Component\Filesystem\Filesystem
+
+    dotenv:
+        class: \App\Core\Dotenv
+        arguments: ['@fs', '@dotenv_loader', "%env%"]
+
+    dotenv_loader:
+        class: \Symfony\Component\Dotenv\Dotenv
+
+    command_build:
+        class: \App\Core\Command\BuildCommand
+        arguments:
+            - "@fs"
+            - "%build%"
+            - "%root_path%"

@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../src/bootstrap.php';
+
+$app = $container->get('app');
+$app->add($container->get('command_build'));
+$app->run();
