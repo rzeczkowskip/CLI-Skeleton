@@ -1,9 +1,0 @@
-imports:
-    - { resource: build.yml }
-    - { resource: services.yml }
-
-parameters:
-    app_name: 'CLI Application Skeleton'
-    env:
-        file: ~
-        required: ~

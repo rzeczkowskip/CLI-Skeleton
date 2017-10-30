@@ -1,5 +1,0 @@
-parameters:
-    version: 0.1.0
-    build:
-        slug: app
-        include: []

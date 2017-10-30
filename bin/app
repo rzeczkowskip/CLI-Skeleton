@@ -1,7 +1,51 @@
 #!/usr/bin/env php
 <?php
-require_once __DIR__ . '/../src/bootstrap.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$app = $container->get('app');
-$app->add($container->get('command_build'));
-$app->run();
+$container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+
+$rootPath = __DIR__ . '/..';
+$container->setParameter('app_path', $rootPath);
+$container->setParameter('app.name', 'CLI App');
+$container->setParameter('app.version', '0.1.1');
+
+//create app
+$container->setDefinition('app', new \Symfony\Component\DependencyInjection\Definition(
+    \Symfony\Component\Console\Application::class,
+    [
+        '%app.name%',
+        '%app.version%'
+    ]
+));
+
+//load config
+$loader = new \Symfony\Component\DependencyInjection\Loader\YamlFileLoader(
+    $container,
+    new \Symfony\Component\Config\FileLocator($rootPath . '/config')
+);
+$loader->load('config.yml');
+
+//auto add commands
+$container->addCompilerPass(new class implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
+    public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container)
+    {
+        if (!$container->has('app')) {
+            return;
+        }
+
+        $definition = $container->findDefinition('app');
+
+        $contentTypes = $container->findTaggedServiceIds('command');
+
+        foreach ($contentTypes as $id => $tags) {
+            $definition->addMethodCall(
+                'add',
+                array(new \Symfony\Component\DependencyInjection\Reference($id))
+            );
+        }
+    }
+});
+
+//go!
+$container->compile();
+$container->get('app')->run();

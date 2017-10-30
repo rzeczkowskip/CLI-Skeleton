@@ -1,0 +1,6 @@
+imports:
+    - { resource: services.yml }
+
+parameters:
+    app.name: 'CLI App'
+    app.version: 0.1.1
